@@ -3,6 +3,7 @@ from player import Player
 from world import World
 from utils import Stack
 from utils import Queue
+# from hardcode import traversal_path
 
 import random
 from ast import literal_eval
@@ -136,107 +137,85 @@ traversal_path = []
 # dft(player, 0, traversal_path)
 
 
-# class Graph:
-#     def __init__(self):
-#         self.vertices = {}
-
-#     def add_vertex(self, vertex_id):
-#         self.vertices[vertex_id] = set()
-
-#     def add_edge(self, v1, v2):
-#         if v1 in self.vertices and v2 in self.vertices:
-#             self.vertices[v1].add(v2)
-#         else:
-#             raise IndexError('That vertex does not exist')
-
-#     def get_neighbors(self, vertex_id):
-#         return self.vertices[vertex_id]
-
-#     def get_all_social_paths(self, starting_vertex):
-#         # Create an empty queue
-#         q = Queue()
-#         # Add a PATH to the starting_vertex_id to the queue
-#         q.enqueue([starting_vertex])
-#         # Create an empty dictionary to store visited users and social paths
-#         visited = {}
-#         # While the queue is not empty..
-#         while q.size() > 0:
-#             # Dequeue the first path
-#             path = q.dequeue()
-#             # Grab the last vertex from the path
-#             v = path[-1]
-#             # Check if it has been visited
-#             if v not in visited:
-#                 # Mark it as visited
-#                 visited[v] = path
-#                 # Then add the Friends to the back of the queue
-#                 for room_id in self.vertices[v]:
-#                     if room_id not in visited:
-#                         # Copy the path
-#                         copy_path = path.copy()
-#                         # Add Friend to the path
-#                         copy_path.append(room_id)
-#                         q.enqueue(copy_path)
-#         return visited
-
-# g = Graph()
-# g.get_all_social_paths(0)
-# print(f'Length of Traversal Path: {len(traversal_path)}\n\n')
-
-def adventure(world, traversal_path):
-    def unknown_path(graph):
-        for k in graph:
-            if '?' in graph[k].values():
+def adventure_time(world, traversal_path):
+    # Unknown_check will check if we have any ? left in the visted rooms
+    def question_check(graph):
+        for key in graph:
+            if '?' in graph[key].values():
                 return True
         return False
 
-    def find_move(visited, current_room):
+    # Find_move takes the current room and figures out what the directions avaible are
+    def find_move(visited_rooms, current_room):
         curr_room = current_room.id
-        room_exits = visited[curr_room]
+        room_exits = visited_rooms[curr_room]
         for direction in room_exits:
-            if room_exits[direction] == '?' and current_room.get_room_in_direction(direction).id not in visited:
+            if room_exits[direction] == '?' and current_room.get_room_in_direction(direction).id not in visited_rooms:
                 return direction
         return None
 
-    def find_room(traversal_path, visited, curr_room, stack, reverse):
+    # Find_next_room takes the current room and finds if any rooms connected have a ?, if they do we will add that direction to our path
+    def find_next_room(traversal_path, visited_rooms, curr_room, s):
         while True:
-            next_move = stack.pop()
+            next_move = s.pop()
             traversal_path.append(next_move)
             next_room = curr_room.get_room_in_direction(next_move)
-            if '?' in visited[next_room.id].values():
+            if '?' in visited_rooms[next_room.id].values():
                 return next_room.id
             curr_room = next_room
 
+    # Create our stack
     s = Stack()
-    curr = 0
-    visited = {0: {}}
-    curr_room = world.rooms[curr]
-    backwords = {'n':'s', 'e':'w', 's':'n', 'w':'e'}
+    # Add our starting room
+    v = 0
+    # Create a visited dict
+    visited_rooms = {0: {}}
+    # Create our current room var
+    curr_room = world.rooms[v]
+    # Backwards dict to reference when backtracking
+    backwards = {'n':'s', 'e':'w', 's':'n', 'w':'e'}
+
+    # For loop that adds direction key and ? as a value to our starting room
     for direction in curr_room.get_exits():
-        visited[curr_room.id][direction] = '?'
-    while len(visited) < len(world.rooms) and unknown_path(visited):
-        curr_room = world.rooms[curr]
-        if curr_room not in visited:
-            visited[curr_room.id] = {}
+        visited_rooms[curr_room.id][direction] = '?'
+    # While loop that will check if we have visited the max number of rooms and that there is no ?
+    while len(visited_rooms) < len(world.rooms) and question_check(visited_rooms):
+        # Update the current room
+        curr_room = world.rooms[v]
+        # If current room has not been visited yet
+        if curr_room not in visited_rooms:
+            # Add to visited
+            visited_rooms[curr_room.id] = {}
+            # Get the direction key and ? as a value 
             for direction in curr_room.get_exits():
-                visited[curr_room.id][direction] = '?'
-        next_move = find_move(visited, curr_room)
+                visited_rooms[curr_room.id][direction] = '?'
+        # Run our find move function to decide where to go next
+        next_move = find_move(visited_rooms, curr_room)
+        # If we do not return a next move we path to the next room with ? in it still
         if not next_move:
-            curr = find_room(traversal_path, visited, curr_room, s, backwords)
+            v = find_next_room(traversal_path, visited_rooms, curr_room, s)
+        # If we have our next move then we will add that move to traversal
         else:
             traversal_path.append(next_move)
+            # Update next room
             next_room = curr_room.get_room_in_direction(next_move)
-            visited[curr][next_move] = next_room.id
-            if next_room.id not in visited:
-                visited[next_room.id] = {}
+            # Add to visited rooms
+            visited_rooms[v][next_move] = next_room.id
+            # If the next room is not in visited
+            if next_room.id not in visited_rooms:
+                # Add to visited
+                visited_rooms[next_room.id] = {}
+                # Get exits and add direction as key and ? as value
                 for direction in next_room.get_exits():
-                    visited[next_room.id][direction] = '?'
-            visited[next_room.id][backwords[next_move]] = curr_room.id
-            s.push(backwords[next_move])
-            curr = next_room.id
+                    visited_rooms[next_room.id][direction] = '?'
+            # Traverse back 
+            visited_rooms[next_room.id][backwards[next_move]] = curr_room.id
+            s.push(backwards[next_move])
+            v = next_room.id
 
-print(adventure(world, traversal_path))
-print(traversal_path)
+
+adventure_time(world, traversal_path)
+
 
 # TRAVERSAL TEST
 visited_rooms = set()
