@@ -147,8 +147,8 @@ def adventure_time(world, traversal_path):
 
     # Find_move takes the current room and figures out what the directions avaible are
     def find_move(visited_rooms, curr_room):
-        curr_room = curr_room.id
-        room_exits = visited_rooms[curr_room]
+        curr = curr_room.id
+        room_exits = visited_rooms[curr]
         for direction in room_exits:
             if room_exits[direction] == '?' and curr_room.get_room_in_direction(direction).id not in visited_rooms:
                 return direction
@@ -166,7 +166,6 @@ def adventure_time(world, traversal_path):
 
     # def double_time(visited_rooms, curr_room, traversal_path):
     #   # Was wanting to add a function that would continue a straight path if open. Then work back
-
 
     # Create our stack
     s = Stack()
