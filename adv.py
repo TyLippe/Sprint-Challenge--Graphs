@@ -31,64 +31,19 @@ player = Player(world.starting_room)
 traversal_path = []
 backwords = {'n':'s', 'e':'w', 's':'n', 'w':'e'}
 
-def surroundings(player, room, visited_rooms):
-    if room.get_room_in_direction('n') is not None:
-        next_room = room.get_room_in_direction('n')
-        north_room = next_room.get_room_in_direction('n')
-        east_room = next_room.get_room_in_direction('e')
-        south_room = next_room.get_room_in_direction('s')
-        west_room = next_room.get_room_in_direction('w')
-        if north_room is not None and north_room.id not in visited_rooms:
-            player.travel('n')
-        elif east_room is not None and east_room.id not in visited_rooms:
-            player.travel('e')
-        elif south_room is not None and south_room.id not in visited_rooms:
-            player.travel('s')
-        elif west_room is not None and west_room.id not in visited_rooms:
-            player.travel('w')
-    elif room.get_room_in_direction('e') is not None:
-        next_room = room.get_room_in_direction('e')
-        north_room = next_room.get_room_in_direction('n')
-        east_room = next_room.get_room_in_direction('e')
-        south_room = next_room.get_room_in_direction('s')
-        west_room = next_room.get_room_in_direction('w')
-        if north_room is not None and north_room.id not in visited_rooms:
-            player.travel('n')
-        elif east_room is not None and east_room.id not in visited_rooms:
-            player.travel('e')
-        elif south_room is not None and south_room.id not in visited_rooms:
-            player.travel('s')
-        elif west_room is not None and west_room.id not in visited_rooms:
-            player.travel('w')
-    elif room.get_room_in_direction('s') is not None:
-        next_room = room.get_room_in_direction('s')
-        north_room = next_room.get_room_in_direction('n')
-        east_room = next_room.get_room_in_direction('e')
-        south_room = next_room.get_room_in_direction('s')
-        west_room = next_room.get_room_in_direction('w')
-        if north_room is not None and north_room.id not in visited_rooms:
-            player.travel('n')
-        elif east_room is not None and east_room.id not in visited_rooms:
-            player.travel('e')
-        elif south_room is not None and south_room.id not in visited_rooms:
-            player.travel('s')
-        elif west_room is not None and west_room.id not in visited_rooms:
-            player.travel('w')
-    elif room.get_room_in_direction('w') is not None:
-        next_room = room.get_room_in_direction('w')
-        north_room = next_room.get_room_in_direction('n')
-        east_room = next_room.get_room_in_direction('e')
-        south_room = next_room.get_room_in_direction('s')
-        west_room = next_room.get_room_in_direction('w')
-        if north_room is not None and north_room.id not in visited_rooms:
-            player.travel('n')
-        elif east_room is not None and east_room.id not in visited_rooms :
-            player.travel('e')
-        elif south_room is not None and south_room.id not in visited_rooms:
-            player.travel('s')
-        elif west_room is not None and west_room.id not in visited_rooms:
-            player.travel('w')
-    
+
+# class Graph:
+#     def __init__(self):
+#         self.vertices = {}
+#     def add_vertex(self, vertex_id):
+#         if vertex_id not in self.vertices:
+#             self.vertices[vertex_id] = set()
+#     def add_edge(self, v1, v2):
+#         if v1 in self.vertices and v2 in self.vertices:
+#             self.vertices[v1].add(v2)
+#         else:
+#             raise IndexError('That vertex does not exisit!')
+
 
 def dft(self, starting_vertex, traversal_path, v = 0):
         # Create an empty Stack
@@ -146,10 +101,9 @@ def dft(self, starting_vertex, traversal_path, v = 0):
                     # If all exits are visited then we need to backtrack
                     else:
                         traversal_path_copy = list(traversal_path)
-                        surroundings(player, player.current_room, visited_rooms)
-                        # last_move = traversal_path_copy.pop()
-                        # player.travel(backwords[last_move])
-                        # traversal_path.append(backwords[last_move])
+                        last_move = traversal_path_copy.pop()
+                        player.travel(backwords[last_move])
+                        traversal_path.append(backwords[last_move])
                         s.push(prev_v)
             # If room has already been visited
             else:
@@ -172,10 +126,9 @@ def dft(self, starting_vertex, traversal_path, v = 0):
                         s.push(player.current_room.id)
                 # If all exits have been visited then we need to backtrack
                 else:
-                    surroundings(player, player.current_room, visited_rooms)
-                    # last_move = traversal_path_copy.pop()
-                    # player.travel(backwords[last_move])
-                    # traversal_path.append(backwords[last_move])
+                    last_move = traversal_path_copy.pop()
+                    player.travel(backwords[last_move])
+                    traversal_path.append(backwords[last_move])
                     s.push(prev_v)
         return traversal_path
         
