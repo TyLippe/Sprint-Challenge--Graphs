@@ -146,16 +146,16 @@ def adventure_time(world, traversal_path):
         return False
 
     # Find_move takes the current room and figures out what the directions avaible are
-    def find_move(visited_rooms, current_room):
-        curr_room = current_room.id
+    def find_move(visited_rooms, curr_room):
+        curr_room = curr_room.id
         room_exits = visited_rooms[curr_room]
         for direction in room_exits:
-            if room_exits[direction] == '?' and current_room.get_room_in_direction(direction).id not in visited_rooms:
+            if room_exits[direction] == '?' and curr_room.get_room_in_direction(direction).id not in visited_rooms:
                 return direction
         return None
 
     # Find_next_room takes the current room and finds if any rooms connected have a ?, if they do we will add that direction to our path
-    def find_next_room(traversal_path, visited_rooms, curr_room, s):
+    def find_next_room(s, traversal_path, visited_rooms, curr_room):
         while True:
             next_move = s.pop()
             traversal_path.append(next_move)
@@ -163,6 +163,10 @@ def adventure_time(world, traversal_path):
             if '?' in visited_rooms[next_room.id].values():
                 return next_room.id
             curr_room = next_room
+
+    # def double_time(visited_rooms, curr_room, traversal_path):
+    #   # Was wanting to add a function that would continue a straight path if open. Then work back
+
 
     # Create our stack
     s = Stack()
@@ -191,9 +195,9 @@ def adventure_time(world, traversal_path):
                 visited_rooms[curr_room.id][direction] = '?'
         # Run our find move function to decide where to go next
         next_move = find_move(visited_rooms, curr_room)
-        # If we do not return a next move we path to the next room with ? in it still
+        # If next move == None we path to the next room with ? in it still
         if not next_move:
-            v = find_next_room(traversal_path, visited_rooms, curr_room, s)
+            v = find_next_room(s, traversal_path, visited_rooms, curr_room)
         # If we have our next move then we will add that move to traversal
         else:
             traversal_path.append(next_move)
