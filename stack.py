@@ -10,3 +10,5 @@ class Stack():
             return None
     def size(self):
         return len(self.stack)
+    def print_stack(self):
+        print(self.stack)

@@ -29,7 +29,114 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
+backwords = {'n':'s', 'e':'w', 's':'n', 'w':'e'}
 
+def dft(self, starting_vertex, traversal_path, v = 0):
+        # Create an empty Stack
+        s = Stack()
+        # Add A PATH TO the starting_vertex to the queue
+        s.push(starting_vertex)
+        # Create an empty set to store visited rooms
+        visited_rooms = set()
+        # While the stack is not empty...
+        while s.size() > 0:
+            exits = list()
+            # Get all avaible exits of current room
+            for door in player.current_room.get_exits():
+                exits += list(door)
+            # Hold the prev room
+            prev_v = v
+            # Pop the last in stack
+            v = s.pop()
+            print(f'Current Room: {player.current_room.id}')
+            # Check if it has been visited
+            # If not visited...
+            if v not in visited_rooms:
+                # Add current room to visited_rooms
+                visited_rooms.add(v)
+                #Check to see if we visited all the rooms!
+                if len(visited_rooms) == 12:
+                    print(f'You have visited every room! {len(visited_rooms)}')
+                    print(f'Traversal Path: {traversal_path}')
+                    return traversal_path
+                else:
+                    # If the exit exists and is not visited we will go that direction
+                    if 'n' in exits and player.current_room.get_room_in_direction('n').id not in visited_rooms:
+                        player.travel('n')
+                        traversal_path.append('n')
+                        s.push(player.current_room.id)
+                    elif 'e' in exits and player.current_room.get_room_in_direction('e').id not in visited_rooms:
+                        player.travel('e')
+                        traversal_path.append('e')
+                        s.push(player.current_room.id)
+                    elif 's' in exits and player.current_room.get_room_in_direction('s').id not in visited_rooms:
+                        player.travel('s')
+                        traversal_path.append('s')
+                        s.push(player.current_room.id)
+                    elif 'w' in exits and player.current_room.get_room_in_direction('w').id not in visited_rooms:
+                        player.travel('w')
+                        traversal_path.append('w')
+                        s.push(player.current_room.id)
+                    # If all exits are visited then we need to backtrack
+                    else:
+                        last_move = traversal_path[-1]
+                        if backwords[last_move] == 'n':
+                            player.travel('n')
+                            traversal_path.append('n')
+                        elif backwords[last_move] == 'e':
+                            player.travel('e')
+                            traversal_path.append('e')
+                        elif backwords[last_move] == 's':
+                            player.travel('s')
+                            traversal_path.append('s')
+                            print(traversal_path)
+                        elif backwords[last_move] == 'w':
+                            player.travel('w')
+                            traversal_path.append('w')
+                        s.push(prev_v)
+            # If room has already been visited
+            else:
+                # If the exit exists and is not visited we will go that direction
+                if 'n' in exits and player.current_room.get_room_in_direction('n').id not in visited_rooms:
+                     player.travel('n')
+                     traversal_path.append('n')
+                     s.push(player.current_room.id)
+                elif 'e' in exits and player.current_room.get_room_in_direction('e').id not in visited_rooms:
+                    player.travel('e')
+                    traversal_path.append('e')
+                    s.push(player.current_room.id)
+                elif 's' in exits and player.current_room.get_room_in_direction('s').id not in visited_rooms:
+                    player.travel('s')
+                    traversal_path.append('s')
+                    s.push(player.current_room.id)
+                elif 'w' in exits and player.current_room.get_room_in_direction('w').id not in visited_rooms:
+                        player.travel('w')
+                        traversal_path.append('w')
+                        s.push(player.current_room.id)
+                # If all exits have been visited then we need to backtrack
+                else:
+                    last_move = traversal_path[-1]
+                    if backwords[last_move] == 'n':
+                        player.travel('n')
+                        traversal_path.append('n')
+                    elif backwords[last_move] == 'e':
+                        player.travel('e')
+                        traversal_path.append('e')
+                    elif backwords[last_move] == 's':
+                        player.travel('s')
+                        traversal_path.append('s')
+                    elif backwords[last_move] == 'w':
+                        player.travel('w')
+                        traversal_path.append('w')
+                    s.push(prev_v)
+
+        print(f'Visited: {visited_rooms}')
+        print(f'Traversal Path: {traversal_path}')
+        return traversal_path
+        
+        
+dft(player, 0, traversal_path)
+print(f'Length of Traversal Path: {len(traversal_path)}\n\n')
 
 
 # TRAVERSAL TEST
@@ -48,7 +155,6 @@ else:
     print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
 
 
-
 # #######
 # # UNCOMMENT TO WALK AROUND
 # #######
@@ -61,39 +167,3 @@ else:
 #         break
 #     else:
 #         print("I did not understand that command.")
-
-
-def dft(self, starting_vertex, traversal_path):
-        # Create an empty Stack
-        s = Stack()
-        # Add A PATH TO the starting_vertex to the queue
-        s.push(starting_vertex)
-        # Create an empty set to store visited rooms
-        visited_rooms = set()
-        # While the queue is not empty...
-        while s.size() > 0:
-            exits = list()
-            # Get all avaible exits of current room
-            for door in player.current_room.get_exits():
-                exits += list(door)
-            print(f'Exits: {exits}')
-            # Dequeue, the first PATH
-            v = s.pop()
-            # Check if it has been visited
-            # If not visited...
-            if v not in visited_rooms:
-                # Add current room to visited_rooms
-                visited_rooms.add(v)
-                # Move player and add new room to visited
-                player.travel('n')
-                # visited_rooms.add(player.current_room.id)
-                s.push(player.current_room.id)
-                print(f'Visited: {visited_rooms}')
-                if 'n' in exits:
-                    traversal_path.append('n')
-        print(traversal_path)
-                
-
-
-dft(player, 0, traversal_path)
-print(len(traversal_path))
